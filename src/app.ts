@@ -1,3 +1,5 @@
+import 'dotenv/config'
+
 import { Server } from './presentation/server'
 ;(async () => {
   main()
