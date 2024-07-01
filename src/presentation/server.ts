@@ -1,21 +1,32 @@
+import { envs } from '../config/plugins/envs.plugin'
 import { CheckService } from '../domain/use-cases/checks/check-service'
+import { SendEmailLogs } from '../domain/use-cases/email/send-email-logs'
 import { FileSystemDatasource } from '../infrastructure/datasources/file-system.datasource'
 import { LogRepositoryImpl } from '../infrastructure/repositories/log.repository.impl'
 import { cronService } from './cron/cron-service'
+import { EmailService } from './email/email.service'
 
 const fileSystemLogRepository = new LogRepositoryImpl(new FileSystemDatasource())
+const emailService = new EmailService()
 
 export class Server {
+  constructor(private readonly emailService: EmailService) {}
+
   public static start() {
     console.log('Server started')
 
-    cronService.createJob('*/5 * * * * *', () => {
-      const url = 'https://localhost:3000'
-      new CheckService(
-        fileSystemLogRepository,
-        () => console.log(`Service ${url} is OK`),
-        (error) => console.error(error)
-      ).execute(url)
-    })
+    //TODO Mandar email
+    // new SendEmailLogs(emailService, fileSystemLogRepository).execute('jbecerrap95@gmail.com')
+
+    // emailService.sendEmailWithFileSystemLogs('jbecerrap95@gmail.com')
+
+    // cronService.createJob('*/5 * * * * *', () => {
+    //   const url = 'https://localhost:3000'
+    //   new CheckService(
+    //     fileSystemLogRepository,
+    //     () => console.log(`Service ${url} is OK`),
+    //     (error) => console.error(error)
+    //   ).execute(url)
+    // })
   }
 }
