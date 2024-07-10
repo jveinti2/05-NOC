@@ -35,17 +35,19 @@ describe('log model tests', () => {
 
   test('Should return de schema object', () => {
     const schema = LogModel.schema.obj
-
     expect(schema).toEqual(
       expect.objectContaining({
-        message: { type: expect.any(Function) },
-        level: {
+        message: expect.any(Function),
+        level: expect.objectContaining({
           type: expect.any(Function),
           enum: ['low', 'medium', 'high'],
           default: 'low',
-        },
-        origin: { type: expect.any(Function) },
-        createdAt: expect.any(Object),
+        }),
+        origin: expect.any(Function),
+        createdAt: expect.objectContaining({
+          type: expect.any(Function),
+          default: expect.any(Function),
+        }),
       })
     )
   })
