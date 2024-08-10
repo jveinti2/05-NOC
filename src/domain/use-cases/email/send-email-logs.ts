@@ -1,39 +1,42 @@
-import { EmailService } from '../../../presentation/email/email.service'
-import { LogEntity, LogSeverityLevel } from '../../entities/log.entity'
-import { LogRepository } from '../../repository/log.repository'
+import { EmailService } from "../../../presentation/email/email.service";
+import { LogEntity, LogSeverityLevel } from "../../entities/log.entity";
+import { LogRepository } from "../../repository/log.repository";
 
 interface SendLogsUseCase {
-  execute(to: string | string[]): Promise<boolean>
+  execute(to: string | string[]): Promise<boolean>;
 }
 
 export class SendEmailLogs implements SendLogsUseCase {
-  constructor(private readonly emailService: EmailService, private readonly logRepository: LogRepository) {}
+  constructor(
+    private readonly emailService: EmailService,
+    private readonly logRepository: LogRepository
+  ) {}
 
   async execute(to: string | string[]): Promise<boolean> {
     try {
-      const sent = await this.emailService.sendEmailWithFileSystemLogs(to)
+      const sent = await this.emailService.sendEmailWithFileSystemLogs(to);
 
-      if (!sent) throw new Error('Email not sent')
+      if (!sent) throw new Error("Email not sent");
 
       const log = new LogEntity({
         message: `Email sent to ${to}`,
         level: LogSeverityLevel.low,
-        origin: 'send-email-logs.ts',
-      })
+        origin: "send-email-logs.ts",
+      });
 
-      this.logRepository.saveLog(log)
+      this.logRepository.saveLog(log);
 
-      return true
+      return true;
     } catch (error) {
       const log = new LogEntity({
         message: ` ${error}`,
         level: LogSeverityLevel.high,
-        origin: 'send-email-logs.ts',
-      })
+        origin: "send-email-logs.ts",
+      });
 
-      this.logRepository.saveLog(log)
+      this.logRepository.saveLog(log);
 
-      return false
+      return false;
     }
   }
 }
